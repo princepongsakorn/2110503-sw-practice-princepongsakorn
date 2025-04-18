@@ -1,6 +1,7 @@
 const dayjs = require("dayjs");
 const Booking = require("../models/Booking");
 const Hotel = require("../models/Hotel");
+const Room = require("../models/Room");
 
 // @desc    Get all bookings
 // @route   GET /api/v1/bookings
@@ -9,29 +10,33 @@ exports.getBookings = async (req, res, next) => {
   let query;
   // General users can see only their bookings!
   if (req.user.role !== "admin") {
-    query = Booking.find({ user: req.user.id }).populate({
-      path: "hotel",
-      select: "name province tel",
-    });
+    query = Booking.find({ user: req.user.id })
+      .populate({
+        path: "hotel",
+        select: "name province tel",
+      })
+      .populate("room", "roomNumber type price");
   } else {
     // If you are an admin, you can see all!
     if (req.params.hotelId) {
-      console.log(req.params.hotelId);
-      query = Booking.find({ hotel: req.params.hotelId }).populate({
-        path: "hotel",
-        select: "name province tel",
-      });
+      query = Booking.find({ hotel: req.params.hotelId })
+        .populate({
+          path: "hotel",
+          select: "name province tel",
+        })
+        .populate("room", "roomNumber type price");
     } else {
-      query = Booking.find().populate({
-        path: "hotel",
-        select: "name province tel",
-      });
+      query = Booking.find()
+        .populate({
+          path: "hotel",
+          select: "name province tel",
+        })
+        .populate("room", "roomNumber type price");
     }
   }
 
   try {
     const bookings = await query;
-
     res.status(200).json({
       success: true,
       count: bookings.length,
@@ -51,10 +56,12 @@ exports.getBookings = async (req, res, next) => {
 //@access Public
 exports.getBooking = async (req, res, next) => {
   try {
-    const booking = await Booking.findById(req.params.id).populate({
-      path: "hotel",
-      select: "name description tel",
-    });
+    const booking = await Booking.findById(req.params.id)
+      .populate({
+        path: "hotel",
+        select: "name description tel",
+      })
+      .populate("room", "roomNumber type price");
 
     if (!booking) {
       return res.status(404).json({
@@ -82,18 +89,21 @@ exports.getBooking = async (req, res, next) => {
 exports.addBooking = async (req, res, next) => {
   try {
     req.body.hotel = req.params.hotelId;
-    const hotel = await Hotel.findById(req.params.hotelId);
+    req.body.user = req.user.id;
 
-    if (!hotel) {
-      return res.status(404).json({
-        success: false,
-        message: `No hotel with the id of ${req.params.hotelId}`,
-      });
+    const { checkInDate, checkOutDate, room: roomId } = req.body;
+    const hotel = await Hotel.findById(req.params.hotelId);
+    const room = await Room.findById(roomId);
+
+    if (!hotel || !room || room.hotel.toString() !== hotel._id.toString()) {
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "Hotel or Room not found or mismatch",
+        });
     }
 
-    // Add user ID to req.body
-    req.body.user = req.user.id;
-    const { checkInDate, checkOutDate } = req.body;
     if (!checkInDate || !checkOutDate) {
       return res.status(400).json({
         success: false,
@@ -107,6 +117,27 @@ exports.addBooking = async (req, res, next) => {
         success: false,
         message: "Invalid date range",
       });
+    }
+
+    // check booking conflict for a room for this time
+    const conflict = await Booking.findOne({
+      room: roomId,
+      checkOutDate: { $gte: today },
+      $or: [
+        {
+          checkInDate: { $lt: checkOutDate },
+          checkOutDate: { $gt: checkInDate },
+        },
+      ],
+    });
+
+    if (conflict) {
+      return res
+        .status(409)
+        .json({
+          success: false,
+          message: "Room already booked during this period",
+        });
     }
 
     // Find all existing bookings and calculate total nights
@@ -125,6 +156,7 @@ exports.addBooking = async (req, res, next) => {
     }
 
     const booking = await Booking.create(req.body);
+
     res.status(200).json({
       success: true,
       data: booking,
