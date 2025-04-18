@@ -1,4 +1,4 @@
-const hospitals = [
+const hotels = [
   {
     ลำดับ: 1,
     name: "เทพธารินทร์",
@@ -2552,17 +2552,17 @@ const hospitals = [
 ];
 
 Promise.all(
-  hospitals.map((hospital) => {
+  hotels.map((hotel) => {
     const body = {
-      name: hospital.name,
-      address: hospital.address,
-      district: hospital.district,
-      province: hospital.province,
-      postalcode: hospital.postalcode,
-      tel: hospital.tel,
-      region: hospital.region,
+      name: hotel.name,
+      address: hotel.address,
+      district: hotel.district,
+      province: hotel.province,
+      postalcode: hotel.postalcode,
+      tel: hotel.tel,
+      region: hotel.region,
     };
-    fetch("http://localhost:5555/api/v1/hospitals", {
+    fetch("http://localhost:5555/api/v1/hotels", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
