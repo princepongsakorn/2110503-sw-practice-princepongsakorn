@@ -1,11 +1,9 @@
 const Hotel = require("../models/Hotel.js");
 const Booking = require("../models/Booking.js");
+
 //@desc Get all hotels
 //@route GET /api/v1/hotels
 //@access Public
-//exports.getHotels=(req,res,next)=>{
-//res.status(200).json({success:true, msg:'Show all hotels'});
-//};
 exports.getHotels = async (req, res, next) => {
   let query;
 
@@ -17,7 +15,6 @@ exports.getHotels = async (req, res, next) => {
 
   //Loop over remove fields and delete them from reqQuery
   removeFields.forEach((param) => delete reqQuery[param]);
-  console.log(reqQuery);
 
   //Create query string
   let queryStr = JSON.stringify(req.query);
@@ -26,7 +23,7 @@ exports.getHotels = async (req, res, next) => {
     (match) => `$${match}`
   );
 
-  query = Hotel.find(JSON.parse(queryStr)).populate("bookings");
+  query = Hotel.find(JSON.parse(queryStr));
 
   //Select Fields
   if (req.query.select) {
@@ -72,14 +69,12 @@ exports.getHotels = async (req, res, next) => {
       };
     }
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        count: hotels.length,
-        pagination,
-        data: hotels,
-      });
+    res.status(200).json({
+      success: true,
+      count: hotels.length,
+      pagination,
+      data: hotels,
+    });
   } catch (err) {
     res.status(400).json({ success: false });
   }
@@ -88,12 +83,9 @@ exports.getHotels = async (req, res, next) => {
 //@desc Get sigle hotel
 //@route GET /api/v1/hotels/:id
 //@access Public
-//exports.getHotel=(req,res,next)=>{
-//res.status(200).json({success:true, msg:`Show hotel ${req.params.id}`});
-//};
 exports.getHotel = async (req, res, next) => {
   try {
-    const hotel = await Hotel.findById(req.params.id);
+    const hotel = await Hotel.findById(req.params.id).populate("rooms");
     if (!hotel) {
       return res.status(400).json({ success: false });
     }
@@ -106,10 +98,6 @@ exports.getHotel = async (req, res, next) => {
 //@desc Create new hotel
 //@route POST /api/v1/hotels
 //@access Private
-//exports.createHotel=(req,res,next)=>{
-//console.log(req.body);
-//res.status(200).json({success:true, msg:'Create new hotels'});
-//};
 exports.createHotel = async (req, res, next) => {
   try {
     const hotel = await Hotel.create(req.body);
@@ -122,9 +110,6 @@ exports.createHotel = async (req, res, next) => {
 //@desc Update hotel
 //@route PUT /api/v1/hotels/:id
 //@access Private
-//exports.updateHotel=(req,res,next)=>{
-//res.status(200).json({success:true, msg:`Update hotel ${req.params.id}`});
-//};
 exports.updateHotel = async (req, res, next) => {
   try {
     const hotel = await Hotel.findByIdAndUpdate(req.params.id, req.body, {
@@ -145,20 +130,15 @@ exports.updateHotel = async (req, res, next) => {
 //@desc Delete hotel
 //@route DELETE /api/v1/hotels/:id
 //@access Private
-//exports.deleteHotel=(req,res,next)=>{
-//res.status(200).json({success:true, msg:`Delete hotel ${req.params.id}`});
-//};
 exports.deleteHotel = async (req, res, next) => {
   try {
     const hotel = await Hotel.findById(req.params.id);
 
     if (!hotel) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: `Hotel not found with id of ${req.params.id}`,
-        });
+      return res.status(404).json({
+        success: false,
+        message: `Hotel not found with id of ${req.params.id}`,
+      });
     }
 
     await Booking.deleteMany({ hotel: req.params.id });

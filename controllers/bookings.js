@@ -120,8 +120,9 @@ exports.addBooking = async (req, res, next) => {
     }
 
     // check booking conflict for a room for this time
+    const today = dayjs().startOf('day').toDate();
     const conflict = await Booking.findOne({
-      room: roomId,
+      room: room,
       checkOutDate: { $gte: today },
       $or: [
         {
