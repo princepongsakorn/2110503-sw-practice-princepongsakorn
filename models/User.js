@@ -19,6 +19,7 @@ const UserSchema = new mongoose.Schema({
   telephone: {
     type: String,
     required: [true, "Please add a telephone number"],
+    match: [/^\\d{9,10}$/, 'Telephone number must be 9–10 digits']
   },
   role: {
     type: String,
@@ -30,6 +31,10 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Please add a password"],
     minlength: 6,
     select: false,
+    match: [
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    ]
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,

@@ -25,8 +25,19 @@ exports.register = async (req, res, next) => {
     //res.status(200).json({success:true});
     sendTokenResponse(user, 200, res);
   } catch (err) {
-    res.status(400).json({ success: false });
-    console.log(err.stack);
+    let message = 'Something went wrong';
+    if (err.name === 'ValidationError') {
+      message = Object.values(err.errors).map(val => val.message).join(', ');
+    }
+
+    if (err.code === 11000 && err.keyPattern?.email) {
+      message = 'Email already exists';
+    }
+
+    res.status(400).json({
+      success: false,
+      message
+    });
   }
 };
 
