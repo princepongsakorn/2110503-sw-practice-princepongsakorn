@@ -4,7 +4,12 @@ const Booking = require("../models/Booking");
 const Hotel = require("../models/Hotel");
 const Room = require("../models/Room");
 const User = require("../models/User");
-const { sendBookingEmailToUser, sendBookingNotificationToHotel } = require("../uitls/sendHotelNotification");
+const {
+  sendBookingEmailToUser,
+  sendBookingNotificationToHotel,
+  sendBookingCancellationToUser,
+  sendBookingCancellationToHotel,
+} = require("../uitls/sendHotelNotification");
 
 // @desc    Get all bookings
 // @route   GET /api/v1/bookings
@@ -156,12 +161,14 @@ exports.addBooking = async (req, res, next) => {
     }
 
     const booking = await Booking.create(req.body);
-    
+
     //send email
-    const populatedBooking = await Booking.findById(booking._id).populate('room');
+    const populatedBooking = await Booking.findById(booking._id).populate(
+      "room"
+    );
     const user = await User.findById(req.user.id);
-    await sendBookingEmailToUser(user, hotel, populatedBooking)
-    await sendBookingNotificationToHotel(user, hotel, populatedBooking)
+    await sendBookingEmailToUser(user, hotel, populatedBooking);
+    await sendBookingNotificationToHotel(user, hotel, populatedBooking);
 
     res.status(200).json({
       success: true,
@@ -248,8 +255,7 @@ exports.updateBooking = async (req, res, next) => {
 //@access    Private
 exports.deleteBooking = async (req, res, next) => {
   try {
-    const booking = await Booking.findById(req.params.id);
-
+    const booking = await Booking.findById(req.params.id).populate("room");
     if (!booking) {
       return res.status(404).json({
         success: false,
@@ -265,7 +271,27 @@ exports.deleteBooking = async (req, res, next) => {
       });
     }
 
+    if (req.user.role !== "admin") {
+      const today = dayjs();
+      const checkIn = dayjs(booking.checkInDate);
+      const daysDiff = checkIn.diff(today, "day");
+
+      if (daysDiff > 7) {
+        return res.status(400).json({
+          success: false,
+          message: "You can only cancel within 7 days before check-in",
+        });
+      }
+    }
+
     await booking.deleteOne();
+
+    // send email
+    const user = await User.findById(req.user.id);
+    const hotel = await Hotel.findById(booking.hotel);
+
+    await sendBookingCancellationToUser(user, hotel, booking);
+    await sendBookingCancellationToHotel(user, hotel, booking);
 
     res.status(200).json({
       success: true,
