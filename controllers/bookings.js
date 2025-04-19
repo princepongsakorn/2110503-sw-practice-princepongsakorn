@@ -1,7 +1,10 @@
 const dayjs = require("dayjs");
+const nodemailer = require("nodemailer");
 const Booking = require("../models/Booking");
 const Hotel = require("../models/Hotel");
 const Room = require("../models/Room");
+const User = require("../models/User");
+const { sendBookingEmailToUser, sendBookingNotificationToHotel } = require("../uitls/sendHotelNotification");
 
 // @desc    Get all bookings
 // @route   GET /api/v1/bookings
@@ -96,12 +99,10 @@ exports.addBooking = async (req, res, next) => {
     const room = await Room.findById(roomId);
 
     if (!hotel || !room || room.hotel.toString() !== hotel._id.toString()) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Hotel or Room not found or mismatch",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Hotel or Room not found or mismatch",
+      });
     }
 
     if (!checkInDate || !checkOutDate) {
@@ -120,7 +121,7 @@ exports.addBooking = async (req, res, next) => {
     }
 
     // check booking conflict for a room for this time
-    const today = dayjs().startOf('day').toDate();
+    const today = dayjs().startOf("day").toDate();
     const conflict = await Booking.findOne({
       room: room,
       checkOutDate: { $gte: today },
@@ -133,12 +134,10 @@ exports.addBooking = async (req, res, next) => {
     });
 
     if (conflict) {
-      return res
-        .status(409)
-        .json({
-          success: false,
-          message: "Room already booked during this period",
-        });
+      return res.status(409).json({
+        success: false,
+        message: "Room already booked during this period",
+      });
     }
 
     // Find all existing bookings and calculate total nights
@@ -157,6 +156,12 @@ exports.addBooking = async (req, res, next) => {
     }
 
     const booking = await Booking.create(req.body);
+    
+    //send email
+    const populatedBooking = await Booking.findById(booking._id).populate('room');
+    const user = await User.findById(req.user.id);
+    await sendBookingEmailToUser(user, hotel, populatedBooking)
+    await sendBookingNotificationToHotel(user, hotel, populatedBooking)
 
     res.status(200).json({
       success: true,

@@ -29,6 +29,14 @@ const HotelSchema = new mongoose.Schema(
     tel: {
       type: String,
     },
+    email: {
+      type: String,
+      required: [true, "Please add a contact email for the hotel"],
+      match: [
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        "Please add a valid email",
+      ],
+    },
     region: {
       type: String,
       required: [true, "Please add a region"],
