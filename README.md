@@ -111,13 +111,17 @@ Server will run on `http://localhost:5000`
 
 ## 🖼️ Diagrams
 
-### ✅ Use Case Diagram
+### Use Case Diagram
 ![](diagram/use-case.png)
 
-### ✅ Class Diagram
+---
+
+### Class Diagram
 ![](diagram/class.png)
 
-### ✅ Sequence Diagrams
+---
+
+### Sequence Diagrams
 
 #### 🧑‍💼 Admin
 - View all bookings:
