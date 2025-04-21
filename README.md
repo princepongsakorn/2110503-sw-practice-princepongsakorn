@@ -70,14 +70,19 @@ Server will run on `http://localhost:5000`
 |--------|----------------------|------------------------|
 | POST   | `/auth/register`     | Register new user      |
 | POST   | `/auth/login`        | Login and get JWT      |
+| GET    | `/auth/me`           | Get current user profile               |
+| GET    | `/auth/logout`       | Logout current user (clear client JWT) |
 
 ### 🏨 Hotels
-| Method | Endpoint                         | Description                           |
-|--------|----------------------------------|---------------------------------------|
-| GET    | `/hotels`                        | Get all hotels                        |
-| GET    | `/hotels/:id`                    | Get hotel by ID                       |
-| GET    | `/hotels/:hotelId/rooms`         | Get all rooms in a hotel              |
-| GET    | `/hotels/:hotelId/rooms/availability?checkInDate=...&checkOutDate=...` | Check available rooms for hotel |
+| Method | Endpoint                                              | Description                                  |
+|--------|-------------------------------------------------------|----------------------------------------------|
+| GET    | `/hotels`                                             | Get all hotels                               |
+| GET    | `/hotels/:id`                                         | Get single hotel by ID                       |
+| POST   | `/hotels`                                             | Create new hotel                             |
+| PUT    | `/hotels/:id`                                         | Update hotel by ID                           |
+| DELETE | `/hotels/:id`                                         | Delete hotel by ID                           |
+| GET    | `/hotels/:hotelId/rooms`                              | Get all rooms in the specified hotel         |
+| GET    | `/hotels/:hotelId/rooms/availability?checkInDate=...&checkOutDate=...` | Check available rooms in that hotel |
 
 ### 🚪 Rooms (Admin only)
 | Method | Endpoint                               | Description              |
