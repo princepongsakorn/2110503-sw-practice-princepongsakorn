@@ -1,0 +1,2220 @@
+{
+	"info": {
+		"_postman_id": "3b814377-3ae1-4854-b688-6588ec5e52a7",
+		"name": "SW Hotel",
+		"description": "Backend API for reserving vaccne jab timeslots, including hospitals, users, and bookings.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37251412"
+	},
+	"item": [
+		{
+			"name": "End-to-End test",
+			"item": [
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "[1] User Register",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Email in response matches request\", function () {",
+											"    let body = JSON.parse(pm.request.body.raw);",
+											"    pm.environment.set(\"register_email\", body.email);",
+											"    pm.environment.set(\"register_password\", body.password);",
+											"    pm.expect(pm.response.json().email).to.eql(body.email);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"{{$randomFullName}}\",\r\n    \"email\":\"{{$randomEmail}}\",\r\n    \"password\":\"{{$randomPassword}}\",\r\n    \"telephone\": \"{{$randomPhoneNumber}}\",\r\n    \"role\":\"user\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/auth/register",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[2] User Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.environment.set(\"TOKEN\", pm.response.json().token)",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Content-Security-Policy",
+										"value": "default-src 'self';base-uri 'self';block-all-mixed-content",
+										"type": "text"
+									},
+									{
+										"key": "Cross-Origin-Embedder-Policy",
+										"value": "require-corp",
+										"type": "text"
+									},
+									{
+										"key": "Cross-Origin-Opener-Policy",
+										"value": "same-origin",
+										"type": "text"
+									},
+									{
+										"key": "Cross-Origin-Resource-Policy",
+										"value": "same-origin",
+										"type": "text"
+									},
+									{
+										"key": "X-DNS-Prefetch-Control",
+										"value": "off",
+										"type": "text"
+									},
+									{
+										"key": "Expect-CT",
+										"value": "max-age=0",
+										"type": "text"
+									},
+									{
+										"key": "X-Frame-Options",
+										"value": "SAMEORIGIN",
+										"type": "text"
+									},
+									{
+										"key": "Strict-Transport-Security",
+										"value": "max-age=15552000; includeSubDomains",
+										"type": "text"
+									},
+									{
+										"key": "X-Download-Options",
+										"value": "noopen",
+										"type": "text"
+									},
+									{
+										"key": "X-Content-Type-Options",
+										"value": "nosniff",
+										"type": "text"
+									},
+									{
+										"key": "X-Permitted-Cross-Domain-Policies",
+										"value": "none",
+										"type": "text"
+									},
+									{
+										"key": "Referrer-Policy",
+										"value": "no-referrer",
+										"type": "text"
+									},
+									{
+										"key": "X-XSS-Protection",
+										"value": "0",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{register_email}}\",\r\n    \"password\":\"{{register_password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/auth/login",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[2.1] User get me",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/v1/auth/me",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[3] Get All Hotels",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"There are some hotels\", () => {",
+											"    const response = pm.response.json()",
+											"    pm.expect(response.count).to.be.above(0)",
+											"",
+											"    const res = pm.response.json();",
+											"    const firstHotelId = res.data?.[0]?.id;",
+											"    pm.environment.set(\"hotel_id\", firstHotelId);",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels"
+									]
+								},
+								"description": "Fetch all hospitals from database."
+							},
+							"response": []
+						},
+						{
+							"name": "[3.1] Get Available Rooms",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"There are some rooms\", () => {",
+											"    const response = pm.response.json()",
+											"    pm.expect(response.count).to.be.above(0)",
+											"",
+											"    const res = pm.response.json();",
+											"    const firstRoomId = res.data?.[0]?._id;",
+											"    pm.environment.set(\"room_id\", firstRoomId);",
+											"})",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels/:hotel_id/rooms/availability?checkInDate=11/20/2025&checkOutDate=11/23/2025",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels",
+										":hotel_id",
+										"rooms",
+										"availability"
+									],
+									"query": [
+										{
+											"key": "checkInDate",
+											"value": "11/20/2025"
+										},
+										{
+											"key": "checkOutDate",
+											"value": "11/23/2025"
+										}
+									],
+									"variable": [
+										{
+											"key": "hotel_id",
+											"value": "{{hotel_id}}"
+										}
+									]
+								},
+								"description": "Fetch all hospitals from database."
+							},
+							"response": []
+						},
+						{
+							"name": "[4] Add booking",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"",
+											"    const res = pm.response.json();",
+											"    const bookingId = res.data?._id;",
+											"    pm.environment.set(\"user_booking_id\", bookingId);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"room\": \"{{room_id}}\",\r\n    \"checkInDate\": \"12/20/2025\",\r\n    \"checkOutDate\": \"12/23/2025\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels/:hotel_id/bookings/",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels",
+										":hotel_id",
+										"bookings",
+										""
+									],
+									"variable": [
+										{
+											"key": "hotel_id",
+											"value": "{{hotel_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[5] Get bookings",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"There are have one booking\", () => {",
+											"    const response = pm.response.json()",
+											"    pm.expect(response.count).to.be.equal(1)",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/v1/bookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"bookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[6] Update booking",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"checkInDate\": \"12/24/2025\",\r\n    \"checkOutDate\": \"12/25/2025\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/bookings/:booking_id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"bookings",
+										":booking_id"
+									],
+									"variable": [
+										{
+											"key": "booking_id",
+											"value": "{{user_booking_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[7] Cancel booking",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/v1/bookings/:booking_id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"bookings",
+										":booking_id"
+									],
+									"variable": [
+										{
+											"key": "booking_id",
+											"value": "{{user_booking_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[7.1] Get bookings after cancel",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"There are have no one booking\", () => {",
+											"    const response = pm.response.json()",
+											"    pm.expect(response.count).to.be.equal(0)",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/v1/bookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"bookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[8] User Logout",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"TOKEN\", null)",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/v1/auth/logout",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Admin",
+					"item": [
+						{
+							"name": "[9] Admin Register",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Email in response matches request\", function () {",
+											"    let body = JSON.parse(pm.request.body.raw);",
+											"    pm.environment.set(\"admin_email\", body.email);",
+											"    pm.environment.set(\"admin_password\", body.password);",
+											"    pm.expect(pm.response.json().email).to.eql(body.email);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"{{$randomFullName}}\",\r\n    \"email\":\"{{$randomEmail}}\",\r\n    \"password\":\"{{$randomPassword}}\",\r\n    \"telephone\": \"{{$randomPhoneNumber}}\",\r\n    \"role\":\"admin\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/auth/register",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[9.1] Admin Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.environment.set(\"TOKEN\", pm.response.json().token)",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Content-Security-Policy",
+										"value": "default-src 'self';base-uri 'self';block-all-mixed-content",
+										"type": "text"
+									},
+									{
+										"key": "Cross-Origin-Embedder-Policy",
+										"value": "require-corp",
+										"type": "text"
+									},
+									{
+										"key": "Cross-Origin-Opener-Policy",
+										"value": "same-origin",
+										"type": "text"
+									},
+									{
+										"key": "Cross-Origin-Resource-Policy",
+										"value": "same-origin",
+										"type": "text"
+									},
+									{
+										"key": "X-DNS-Prefetch-Control",
+										"value": "off",
+										"type": "text"
+									},
+									{
+										"key": "Expect-CT",
+										"value": "max-age=0",
+										"type": "text"
+									},
+									{
+										"key": "X-Frame-Options",
+										"value": "SAMEORIGIN",
+										"type": "text"
+									},
+									{
+										"key": "Strict-Transport-Security",
+										"value": "max-age=15552000; includeSubDomains",
+										"type": "text"
+									},
+									{
+										"key": "X-Download-Options",
+										"value": "noopen",
+										"type": "text"
+									},
+									{
+										"key": "X-Content-Type-Options",
+										"value": "nosniff",
+										"type": "text"
+									},
+									{
+										"key": "X-Permitted-Cross-Domain-Policies",
+										"value": "none",
+										"type": "text"
+									},
+									{
+										"key": "Referrer-Policy",
+										"value": "no-referrer",
+										"type": "text"
+									},
+									{
+										"key": "X-XSS-Protection",
+										"value": "0",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{admin_email}}\",\r\n    \"password\":\"{{admin_password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/auth/login",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[10] Get All Bookings",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"There are show all booking\", () => {",
+											"    const response = pm.response.json()",
+											"    pm.expect(response.count).to.be.above(0)",
+											"",
+											"    const res = pm.response.json();",
+											"    const firstBookingId = res.data?.[0]?._id;",
+											"    pm.environment.set(\"admin_booking_id\", firstBookingId);",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/v1/bookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"bookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[11] Update booking",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"checkInDate\": \"12/24/2025\",\r\n    \"checkOutDate\": \"12/25/2025\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/bookings/:booking_id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"bookings",
+										":booking_id"
+									],
+									"variable": [
+										{
+											"key": "booking_id",
+											"value": "{{admin_booking_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[12] Cancel Booking",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/v1/bookings/:booking_id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"bookings",
+										":booking_id"
+									],
+									"variable": [
+										{
+											"key": "booking_id",
+											"value": "{{admin_booking_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"TOKEN\", pm. response.json().token)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"{{$randomUserName}}\",\r\n    \"email\":\"user3@gmail.com\",\r\n    \"password\":\"12345678\",\r\n    \"telephone\": \"{{$randomPhoneNumber}}\",\r\n    \"role\":\"user\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/auth/register",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"TOKEN\", pm. response.json().token)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							},
+							{
+								"key": "Content-Security-Policy",
+								"value": "default-src 'self';base-uri 'self';block-all-mixed-content",
+								"type": "text"
+							},
+							{
+								"key": "Cross-Origin-Embedder-Policy",
+								"value": "require-corp",
+								"type": "text"
+							},
+							{
+								"key": "Cross-Origin-Opener-Policy",
+								"value": "same-origin",
+								"type": "text"
+							},
+							{
+								"key": "Cross-Origin-Resource-Policy",
+								"value": "same-origin",
+								"type": "text"
+							},
+							{
+								"key": "X-DNS-Prefetch-Control",
+								"value": "off",
+								"type": "text"
+							},
+							{
+								"key": "Expect-CT",
+								"value": "max-age=0",
+								"type": "text"
+							},
+							{
+								"key": "X-Frame-Options",
+								"value": "SAMEORIGIN",
+								"type": "text"
+							},
+							{
+								"key": "Strict-Transport-Security",
+								"value": "max-age=15552000; includeSubDomains",
+								"type": "text"
+							},
+							{
+								"key": "X-Download-Options",
+								"value": "noopen",
+								"type": "text"
+							},
+							{
+								"key": "X-Content-Type-Options",
+								"value": "nosniff",
+								"type": "text"
+							},
+							{
+								"key": "X-Permitted-Cross-Domain-Policies",
+								"value": "none",
+								"type": "text"
+							},
+							{
+								"key": "Referrer-Policy",
+								"value": "no-referrer",
+								"type": "text"
+							},
+							{
+								"key": "X-XSS-Protection",
+								"value": "0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"user1@gmail.com\",\r\n    \"password\":\"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/auth/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Me",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/v1/auth/me",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"TOKEN\", null)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/auth/logout",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hotels",
+			"item": [
+				{
+					"name": "hotels",
+					"item": [
+						{
+							"name": "Create New Hotel",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"status code is 201\", () => {",
+											"    pm.response.to.have.status(201);",
+											"})",
+											"",
+											"const response = pm.response.json();",
+											"const new_hospital_id = response.data.id;",
+											"",
+											"pm.globals.set(\"global_hospital_ID\", new_hospital_id);",
+											"pm.execution.setNextRequest(\"Get Single Hospital\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\" : \"{{$randomCompanyName}}\",\r\n    \"address\" : \"{{$randomStreetAddress}}\",\r\n    \"district\" : \"Pakkret\",\r\n    \"province\" : \"Nonthaburi\",\r\n    \"postalcode\" : \"10110\",\r\n    \"tel\" : \"{{$randomPhoneNumber}}\",\r\n    \"region\" : \"กรุงเทพมหานคร (Bangkok)\" \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels"
+									]
+								},
+								"description": "Create a New Hospital"
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Hotels",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"There are some hospitals!\", () => {",
+											"    const response = pm.response.json()",
+											"    pm.expect(response.count).to.be.above(0)",
+											"})",
+											"",
+											"pm.execution.setNextRequest(\"Create New Hospital\")"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels"
+									]
+								},
+								"description": "Fetch all hospitals from database."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Single Hotel",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.execution.setNextRequest(\"Update Single Hospital\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels/:hotel_id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels",
+										":hotel_id"
+									],
+									"variable": [
+										{
+											"key": "hotel_id",
+											"value": "680260eed470b4619a4e6ff5"
+										}
+									]
+								},
+								"description": "Fetch a hospital from database."
+							},
+							"response": []
+						},
+						{
+							"name": "Update Single Hotel",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.execution.setNextRequest(\"Delete Single Hospital\")"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"{{$randomEmail}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels/:hotels_id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels",
+										":hotels_id"
+									],
+									"variable": [
+										{
+											"key": "hotels_id",
+											"value": "680260f4d470b4619a4e7007"
+										}
+									]
+								},
+								"description": "Update hospital"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Single Hotel",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.execution.setNextRequest(\"Get All Hospitals\")"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels/:hotels_id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels",
+										":hotels_id"
+									],
+									"variable": [
+										{
+											"key": "hotels_id",
+											"value": ""
+										}
+									]
+								},
+								"description": "Delete hospital"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "rooms",
+					"item": [
+						{
+							"name": "Create New Room",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"status code is 201\", () => {",
+											"    pm.response.to.have.status(201);",
+											"})",
+											"",
+											"const response = pm.response.json();",
+											"const new_hospital_id = response.data.id;",
+											"",
+											"pm.globals.set(\"global_hospital_ID\", new_hospital_id);",
+											"pm.execution.setNextRequest(\"Get Single Hospital\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"roomNumber\" : \"A-009\",\r\n    \"type\" : \"single\",\r\n    \"price\" : {{$randomPrice}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels/:hotel_id/rooms",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels",
+										":hotel_id",
+										"rooms"
+									],
+									"variable": [
+										{
+											"key": "hotel_id",
+											"value": "680260eed470b4619a4e6ff5"
+										}
+									]
+								},
+								"description": "Create a New Hospital"
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Rooms",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"There are some hospitals!\", () => {",
+											"    const response = pm.response.json()",
+											"    pm.expect(response.count).to.be.above(0)",
+											"})",
+											"",
+											"pm.execution.setNextRequest(\"Create New Hospital\")"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels/:hotel_id/rooms",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels",
+										":hotel_id",
+										"rooms"
+									],
+									"variable": [
+										{
+											"key": "hotel_id",
+											"value": "680260eed470b4619a4e6ff5"
+										}
+									]
+								},
+								"description": "Fetch all hospitals from database."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Available Rooms",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"There are some hospitals!\", () => {",
+											"    const response = pm.response.json()",
+											"    pm.expect(response.count).to.be.above(0)",
+											"})",
+											"",
+											"pm.execution.setNextRequest(\"Create New Hospital\")"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels/:hotel_id/rooms/availability?checkInDate=11/20/2025&checkOutDate=11/25/2025",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels",
+										":hotel_id",
+										"rooms",
+										"availability"
+									],
+									"query": [
+										{
+											"key": "checkInDate",
+											"value": "11/20/2025"
+										},
+										{
+											"key": "checkOutDate",
+											"value": "11/25/2025"
+										}
+									],
+									"variable": [
+										{
+											"key": "hotel_id",
+											"value": "680260eed470b4619a4e6ff5"
+										}
+									]
+								},
+								"description": "Fetch all hospitals from database."
+							},
+							"response": []
+						},
+						{
+							"name": "Delete New Room",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"status code is 201\", () => {",
+											"    pm.response.to.have.status(201);",
+											"})",
+											"",
+											"const response = pm.response.json();",
+											"const new_hospital_id = response.data.id;",
+											"",
+											"pm.globals.set(\"global_hospital_ID\", new_hospital_id);",
+											"pm.execution.setNextRequest(\"Get Single Hospital\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "JSON Type",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\" : \"{{$randomCompanyName}}\",\r\n    \"address\" : \"{{$randomStreetAddress}}\",\r\n    \"district\" : \"Pakkret\",\r\n    \"province\" : \"Nonthaburi\",\r\n    \"postalcode\" : \"10110\",\r\n    \"tel\" : \"{{$randomPhoneNumber}}\",\r\n    \"region\" : \"กรุงเทพมหานคร (Bangkok)\" \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/v1/hotels/:hotel_id/rooms/:room_id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"hotels",
+										":hotel_id",
+										"rooms",
+										":room_id"
+									],
+									"variable": [
+										{
+											"key": "hotel_id",
+											"value": "680260eed470b4619a4e6ff5"
+										},
+										{
+											"key": "room_id",
+											"value": "68026314fa04cfd7afb9b6d1"
+										}
+									]
+								},
+								"description": "Create a New Hospital"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "hotal CRUD functionality"
+		},
+		{
+			"name": "Booking",
+			"item": [
+				{
+					"name": "Get All Bookings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/bookings",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bookings by hotals",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/hotels/:hotel_id/bookings",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"hotels",
+								":hotel_id",
+								"bookings"
+							],
+							"variable": [
+								{
+									"key": "hotel_id",
+									"value": "680260eed470b4619a4e6ff5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add booking",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"room\": \"6802639afa04cfd7afb9b6eb\",\r\n    \"checkInDate\": \"12/7/2025\",\r\n    \"checkOutDate\": \"12/8/2025\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/hotels/:hotel_id/bookings/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"hotels",
+								":hotel_id",
+								"bookings",
+								""
+							],
+							"variable": [
+								{
+									"key": "hotel_id",
+									"value": "680260eed470b4619a4e6ff5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/v1/bookings/6803bfae72ded7285e833871",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"6803bfae72ded7285e833871"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWM5NTJlZWI3YTViMzk2YjQ3NWQzOSIsImlhdCI6MTczOTQzMDY4NSwiZXhwIjoxNzQyMDIyNjg1fQ.bqSdBx6hEkkTJHtRcL5l7h3K56xoYpnz6HndazxDgUc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"apptDate\": \"2021-10-02T17:00:00.000Z\",\r\n    \"hospital\": \"6787c0760db741af523ee2e0\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/bookings/67ac952eeb7a5b396b475d39",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"67ac952eeb7a5b396b475d39"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "http://mywebapp-env.eba-bpgdpq2f.us-east-1.elasticbeanstalk.com",
+			"type": "string"
+		},
+		{
+			"key": "TOKEN",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDE5MDRlNjE0ZTQ2YzFkNzI5MjFiYyIsImlhdCI6MTc0MzY5MTA5MywiZXhwIjoxNzQ2MjgzMDkzfQ.AELjAHjShHFqlUXljA_HaPgKOQ57C-ezMxuvyC7Mu3w",
+			"type": "string"
+		}
+	]
+}

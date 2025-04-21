@@ -105,12 +105,42 @@ Server will run on `http://localhost:5000`
 
 ---
 
-## ✅ Functional Requirements Covered
-- Limit bookings to 3 nights total per user
-- Prevent room conflicts for overlapping bookings
-- Email confirmation/cancellation for user & hotel
-- Admin can view/edit/delete all bookings
-- Users can only cancel if within 7 days before check-in
+## 🧪 Postman API Collection & E2E Test Runner
+
+This project includes a Postman API Collection for testing and validating the hotel service endpoints.
+
+### 📦 Postman Collection
+
+You can find the Postman collection file here:
+
+```
+hotel-api.postman_collection.json
+```
+
+To use it:
+
+1. Open Postman.
+2. Import the collection file (`hotel-api.postman_collection.json`).
+3. Set URL environment variables.
+4. Run individual requests or the entire collection.
+
+### 🚀 E2E Runner with Newman
+
+To execute full end-to-end tests via CLI using [Newman](https://www.npmjs.com/package/newman):
+
+```bash
+npm install -g newman
+
+newman run hotel-api.postman_collection.json --env-var base_url=http://localhost:3000
+```
+
+You can also use a Postman environment file:
+
+```bash
+newman run hotel-api.postman_collection.json --environment local.postman_environment.json
+```
+
+Test results will be printed in the terminal. You can also export them as HTML or JSON using Newman reporters.
 
 ---
 

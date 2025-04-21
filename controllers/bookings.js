@@ -275,7 +275,7 @@ exports.deleteBooking = async (req, res, next) => {
       const checkIn = dayjs(booking.checkInDate);
       const daysDiff = checkIn.diff(today, "day");
 
-      if (daysDiff > 7) {
+      if (daysDiff <= 7) {
         return res.status(400).json({
           success: false,
           message: "You can only cancel within 7 days before check-in",
