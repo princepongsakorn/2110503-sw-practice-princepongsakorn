@@ -131,7 +131,7 @@ To execute full end-to-end tests via CLI using [Newman](https://www.npmjs.com/pa
 ```bash
 npm install -g newman
 
-newman run hotel-api.postman_collection.json --env-var base_url=http://localhost:3000
+newman run hotel-api.postman_collection.json --env-var URL=http://localhost:3000
 ```
 
 You can also use a Postman environment file:
