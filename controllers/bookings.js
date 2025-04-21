@@ -1,5 +1,4 @@
 const dayjs = require("dayjs");
-const nodemailer = require("nodemailer");
 const Booking = require("../models/Booking");
 const Hotel = require("../models/Hotel");
 const Room = require("../models/Room");
@@ -9,7 +8,7 @@ const {
   sendBookingNotificationToHotel,
   sendBookingCancellationToUser,
   sendBookingCancellationToHotel,
-} = require("../uitls/sendHotelNotification");
+} = require("../utils/sendHotelNotification");
 
 // @desc    Get all bookings
 // @route   GET /api/v1/bookings

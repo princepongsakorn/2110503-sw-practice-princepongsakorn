@@ -3,26 +3,34 @@ const dayjs = require("dayjs");
 class EmailService {
   constructor() {
     this.transporter = null;
+    this.emailAccount = null;
   }
 
   async init() {
     if (this.transporter) return;
-    const testAccount = await nodemailer.createTestAccount();
+    await this.initUser();
     this.transporter = nodemailer.createTransport({
-      host: testAccount.smtp.host,
-      port: testAccount.smtp.port,
-      secure: testAccount.smtp.secure,
+      host: this.emailAccount.smtp.host,
+      port: this.emailAccount.smtp.port,
+      secure: this.emailAccount.smtp.secure,
       auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
+        user: this.emailAccount.user,
+        pass: this.emailAccount.pass,
       },
     });
+  }
+
+  async initUser() {
+    this.emailAccount = await nodemailer.createTestAccount();
   }
 
   async sendMail(options) {
     await this.init();
     const info = await this.transporter.sendMail(options);
-    console.log(`[emailService] ${options.subject} sent:`, nodemailer.getTestMessageUrl(info));
+    console.log(
+      `[emailService] ${options.subject} sent:`,
+      nodemailer.getTestMessageUrl(info)
+    );
   }
 }
 
