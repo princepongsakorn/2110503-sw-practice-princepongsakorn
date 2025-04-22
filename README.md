@@ -105,42 +105,30 @@ Server will run on `http://localhost:5000`
 
 ---
 
-## 🧪 Postman API Collection & E2E Test Runner
+## 📬 Postman API Collection & E2E Runner
 
-This project includes a Postman API Collection for testing and validating the hotel service endpoints.
+You can test the entire Hotel Booking System using the provided Postman collection:
 
-### 📦 Postman Collection
+### ✅ Postman Collection
+- **File**: `hotel-api.postman_collection.json`
+- **Includes**: All API endpoints (auth, hotels, rooms, bookings)
+- **Environment**: Use variables like `{{URL}}`
 
-You can find the Postman collection file here:
+### ✅ E2E Test Flow
+1. Register user
+2. Login user
+3. View hotel list
+4. Create booking (with validation)
+5. View own bookings
+6. Edit booking
+7. Cancel booking
+8. Logout user
+9. Login as admin
+10. View all bookings
+11. Edit any booking
+12. Delete any booking
 
-```
-hotel-api.postman_collection.json
-```
-
-To use it:
-
-1. Open Postman.
-2. Import the collection file (`hotel-api.postman_collection.json`).
-3. Set URL environment variables.
-4. Run individual requests or the entire collection.
-
-### 🚀 E2E Runner with Newman
-
-To execute full end-to-end tests via CLI using [Newman](https://www.npmjs.com/package/newman):
-
-```bash
-npm install -g newman
-
-newman run hotel-api.postman_collection.json --env-var URL=http://localhost:3000
-```
-
-You can also use a Postman environment file:
-
-```bash
-newman run hotel-api.postman_collection.json --environment local.postman_environment.json
-```
-
-Test results will be printed in the terminal. You can also export them as HTML or JSON using Newman reporters.
+Use Postman's Collection Runner or Newman for automated execution.
 
 ---
 
